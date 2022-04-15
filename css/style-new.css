@@ -154,6 +154,9 @@
 }
 
 @media (max-width: 450px) {
+	.partnership__site-link {
+		max-width: 300px;
+	}
 }
 
 .screen--fire-safety.bg-green {
