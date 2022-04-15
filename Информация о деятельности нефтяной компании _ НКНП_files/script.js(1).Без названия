@@ -1,0 +1,18 @@
+jQuery(document).ready(function(){
+    let headerH = jQuery('.header-page').height(),
+        navH = jQuery('.info-section').innerHeight();
+
+    jQuery(document).on('scroll', function() {
+        let documentScroll = jQuery(this).scrollTop();
+        if (documentScroll > 400) {
+            jQuery('.header-page').addClass('fixed');
+            jQuery('.info-section').css({"paddingTop": headerH + 10});
+        }
+        else
+        {
+            jQuery('.header-page').removeClass('fixed');
+            jQuery('.info-section').removeAttr('style');
+        }
+    });
+
+});

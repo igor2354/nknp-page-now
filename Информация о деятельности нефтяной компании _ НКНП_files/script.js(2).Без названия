@@ -1,0 +1,183 @@
+jQuery(document).ready(function(){
+	jQuery('.download-list__item-subTableMenu').on('click', function(){
+		var $This = $(this);
+
+		if (!$This.hasClass('OVOS_list')){
+			$This.toggleClass('open');
+			$This.next().slideToggle();
+		}
+	});
+
+	jQuery('.download-list__item-subTableMenu.OVOS_list .OVOS_list_btn').on('click', function(){
+		var $This = $(this);
+
+
+		$This.closest('.OVOS_list').toggleClass('open');
+		$This.closest('.OVOS_list').find('.documents_list').slideToggle();
+	});
+
+	jQuery('.sort-select').click(function() {
+		jQuery('.sort-options', this).toggleClass('open');
+		jQuery(this).parent('.sort-list-item').siblings(".sort-list-item").find(".sort-options").removeClass('open');
+	});
+
+	jQuery('.sort-options > li').click(function() {
+		let selection = jQuery(this).text();
+		let dataValue = jQuery(this).attr('data-value');
+		jQuery(this).closest('.selected-sort-option').find("span").text(selection);
+		jQuery(this).closest('.sort-select').addClass('open').attr('data-selected-value', dataValue);
+
+		let section_id = jQuery(this).closest('section').attr('id'),
+			container = jQuery('#'+section_id+' .wrapper .container-item'),
+			container_id = container.data('id');
+
+		jQuery.ajax({
+			method: 'get',
+			url: window.location.href,
+			data: {'section_id': section_id, 'sort': dataValue},
+			success: function(data){
+
+				if(container_id > 0){
+					jQuery('#'+section_id+' .wrapper .container-item[data-id='+container_id+']').html(jQuery(data).find('#'+section_id+' .wrapper .container-item[data-id='+container_id+']').html());
+				} else {
+					container.html(jQuery(data).find('#'+section_id+' .wrapper .container-item').html());
+				}
+			}
+		});
+	});
+
+
+  jQuery('.media-content__item .gallery').lightGallery({
+    selector: 'a.foto-lightbox'
+  });
+
+	// jQuery('.media-content__item .foto-lightbox').on('click', function(){
+	// 	$('.lg-next.lg-icon').click();
+	// });
+
+ //  $('.lg-next.lg-icon').click();
+
+  jQuery('.media-content__item .video-gallery').lightGallery({
+    selector: 'li a'
+  });
+
+
+  jQuery('.overlay-slidedown.open, .scroll-list').mCustomScrollbar({
+    scrollButtons: {
+      enable: true
+    },
+    theme: "dark-thick"
+  });
+
+
+
+	jQuery('.media-dates-sort .sort-input-label').on('click', function(event){
+
+		let container_id = jQuery(this).closest('.tabs-wrapper__item').data('id');
+
+		if( !jQuery(this).hasClass('all-date'))
+		{
+			jQuery('div[data-id='+container_id+'] .media-dates-sort .sort-input-label.all-date').parent().find('input').removeAttr("checked");
+			jQuery('div[data-id='+container_id+'] .media-dates-sort .sort-input-label.all-date').removeClass('current');
+		}
+		else if(jQuery(this).hasClass('all-date'))
+		{
+			jQuery('div[data-id='+container_id+'] .media-dates-sort li input').each(function(index, item){
+				if(jQuery(item).attr('id') != 'all_date'){
+					jQuery(item).removeAttr("checked");
+					jQuery(item).next().removeClass("current");
+				}
+			});
+		} 
+
+		if(jQuery(this).hasClass('current')){
+			jQuery(this).removeClass('current');
+		} else {
+			jQuery(this).addClass('current');
+		}
+		
+
+		let inputCheck = [];
+		jQuery('div[data-id='+container_id+'] .media-dates-sort li label.current').each(function(index, item){
+			inputCheck.push(jQuery(item).attr('for'));
+		});
+		
+
+		let section_id = jQuery(this).closest('section').attr('id');
+		console.log({'section_id': section_id, 'container_id': container_id, 'sort': JSON.stringify(inputCheck)});
+		jQuery.ajax({
+			method: 'get',
+			url: window.location.href,
+			data: {'section_id': section_id, 'container_id': container_id, 'sort': JSON.stringify(inputCheck)},
+			success: function(data){
+				jQuery('#'+section_id+' .tabs-wrapper__item[data-id='+container_id+'] ul:not(.sort-date)').html(jQuery(data).find('#'+section_id+' .tabs-wrapper__item[data-id='+container_id+'] ul:not(.sort-date)').html());
+			}
+		});
+
+	});
+
+
+	jQuery('.tabs-magazine__item').on('click', function() {
+		let id = jQuery(this).data('id');
+		jQuery(this).siblings().removeClass('active');
+		jQuery(this).addClass('active');
+		jQuery('.tabs-wrapper-magazine__item').removeClass('active');
+		jQuery('.tabs-wrapper-magazine__item[data-id=' + id + ']').addClass('active');
+	});
+
+
+
+
+
+
+	jQuery('.section-menu__item > span').click(function() {
+	    jQuery(this).closest('li').addClass('active');
+	    jQuery(this).closest('li').siblings().removeClass("active");
+	    jQuery('.section-menu__item ul').slideUp();
+	    if (jQuery(this).next().is(":visible")) {
+	      jQuery(this).next().slideUp();
+	    } else {
+	      jQuery(this).next().slideToggle();
+	    }
+	    return false;
+	});
+	jQuery('.section-menu__item ul li span').click(function() {
+	    jQuery('.section-menu__item ul li span').removeClass('active');
+	    jQuery(this).addClass('active');
+	});
+
+	  
+	jQuery('.section-menu__list span').on('click', function() {
+
+		if(jQuery(this).hasClass('section-menu__title') && jQuery(this).parent().hasClass('empty')){
+			let id = jQuery(this).next().find('li').data('id');
+			jQuery('.section-info__item').removeClass('active');
+			jQuery('.section-info__item[data-id=' + id + ']').addClass('active');
+		} else {
+			let id = jQuery(this).parent().data('id');
+			jQuery('.section-info__item').removeClass('active');
+			jQuery('.section-info__item[data-id=' + id + ']').addClass('active');
+		}
+	});
+  
+   // Faq-content
+
+  faqList = jQuery('.faq-list'),
+  faqList_height = faqList.outerHeight();
+
+  faqList.find('li').on('click', function() {
+    var $el = jQuery(this),
+      id = $el.attr('href');
+
+    jQuery(this).siblings().removeClass("active");
+    jQuery(this).addClass('active');
+
+    $('.faq-content-list').animate({
+      scrollTop: $(id).offset().top - faqList_height
+    }, 500);
+
+    return false;
+  });
+
+
+});
